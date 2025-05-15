@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 
 public class CurrencyRequirementFunction  {
 
-    public static RequirementFunction<CurrencyWarpRequirement, RequirementRegistry.VariableScaledParameter> add_currency = modifier(
+    public static RequirementFunction<CurrencyWarpRequirement, RequirementRegistry.VariableScaledParameter> scaled_add_currency = modifier(
             "scaled_add_currency_cost",
             new CurrencyWarpRequirementType(),
             RequirementRegistry.VariableScaledParameter.class,
@@ -47,6 +47,21 @@ public class CurrencyRequirementFunction  {
                 if (!value.containsValue(parameters.value())) {
                     requirement.setValue(value.fromCoreValue(parameters.value().getCoreValue()));
                 }
+                return requirement;
+            },
+            WSCCommonConfig.EnableCurrencyConsumption
+    );
+
+    public static RequirementFunction<CurrencyWarpRequirement,CurrencyParameter> add_currency = modifier(
+            "add_currency_cost",
+            new CurrencyWarpRequirementType(),
+            CurrencyParameter.class,
+            (requirement, context, parameters) -> {
+                MoneyValue value = requirement.getValue();
+                long l = value.getCoreValue() + parameters.value().getCoreValue();
+                requirement.setValue(CoinValue.fromNumber("main", l));
+                WaystoneCurrency.LOGGER.debug("add_currency_cost: {} + {} = {}", value.getCoreValue(), parameters.value().getCoreValue(), requirement.getValue().getCoreValue());
+
                 return requirement;
             },
             WSCCommonConfig.EnableCurrencyConsumption

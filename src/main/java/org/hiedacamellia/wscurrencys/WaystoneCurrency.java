@@ -26,6 +26,7 @@ public class WaystoneCurrency
         WaystonesAPI.registerRequirementModifier(CurrencyRequirementFunction.add_currency);
         WaystonesAPI.registerRequirementModifier(CurrencyRequirementFunction.max_currency);
         WaystonesAPI.registerRequirementModifier(CurrencyRequirementFunction.min_currency);
+        WaystonesAPI.registerRequirementModifier(CurrencyRequirementFunction.scaled_add_currency);
 
 
         modContainer.registerConfig(ModConfig.Type.COMMON, WSCCommonConfig.SPEC);
