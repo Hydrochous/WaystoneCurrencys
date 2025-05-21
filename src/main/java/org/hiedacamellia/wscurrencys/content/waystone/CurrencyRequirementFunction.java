@@ -24,6 +24,19 @@ public class CurrencyRequirementFunction  {
             WSCCommonConfig.EnableCurrencyConsumption
     );
 
+    public static RequirementFunction<CurrencyWarpRequirement, RequirementRegistry.FloatParameter> multiply_currency = modifier(
+            "multiply_currency_cost",
+            new CurrencyWarpRequirementType(),
+            RequirementRegistry.FloatParameter.class,
+            (requirement, context, parameters) -> {
+                MoneyValue value = requirement.getValue();
+                long l = (long) (value.getCoreValue() * parameters.value());
+                requirement.setValue(CoinValue.fromNumber("main", l));
+                return requirement;
+            },
+            WSCCommonConfig.EnableCurrencyConsumption
+    );
+
     public static RequirementFunction<CurrencyWarpRequirement,CurrencyParameter> max_currency = modifier(
             "max_currency_cost",
             new CurrencyWarpRequirementType(),
@@ -33,7 +46,6 @@ public class CurrencyRequirementFunction  {
                 if (value.containsValue(parameters.value())) {
                     requirement.setValue(value.fromCoreValue(parameters.value().getCoreValue()));
                 }
-                WaystoneCurrency.LOGGER.debug("max_currency_cost: {} > {} = {}", value.getCoreValue(), parameters.value().getCoreValue(), requirement.getValue().getCoreValue());
                 return requirement;
             },
             WSCCommonConfig.EnableCurrencyConsumption
@@ -48,7 +60,6 @@ public class CurrencyRequirementFunction  {
                 if (!value.containsValue(parameters.value())) {
                     requirement.setValue(value.fromCoreValue(parameters.value().getCoreValue()));
                 }
-                WaystoneCurrency.LOGGER.debug("min_currency_cost: {} - {} = {}", value.getCoreValue(), parameters.value().getCoreValue(), requirement.getValue().getCoreValue());
                 return requirement;
             },
             WSCCommonConfig.EnableCurrencyConsumption
@@ -62,8 +73,6 @@ public class CurrencyRequirementFunction  {
                 MoneyValue value = requirement.getValue();
                 long l = value.getCoreValue() + parameters.value().getCoreValue();
                 requirement.setValue(CoinValue.fromNumber("main", l));
-                WaystoneCurrency.LOGGER.debug("add_currency_cost: {} + {} = {}", value.getCoreValue(), parameters.value().getCoreValue(), requirement.getValue().getCoreValue());
-
                 return requirement;
             },
             WSCCommonConfig.EnableCurrencyConsumption
