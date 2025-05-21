@@ -124,7 +124,7 @@ configurations {
 
 dependencies {
 
-    implementation "curse.maven:waystones-245755:6447115"
+    implementation "curse.maven:waystones-245755:6519206"
     implementation "curse.maven:lightmans-currency-472521:6503217"
     implementation "curse.maven:balm-531761:6508667"
 }

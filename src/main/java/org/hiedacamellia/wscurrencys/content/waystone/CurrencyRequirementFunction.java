@@ -33,6 +33,7 @@ public class CurrencyRequirementFunction  {
                 if (value.containsValue(parameters.value())) {
                     requirement.setValue(value.fromCoreValue(parameters.value().getCoreValue()));
                 }
+                WaystoneCurrency.LOGGER.debug("max_currency_cost: {} > {} = {}", value.getCoreValue(), parameters.value().getCoreValue(), requirement.getValue().getCoreValue());
                 return requirement;
             },
             WSCCommonConfig.EnableCurrencyConsumption
@@ -47,6 +48,7 @@ public class CurrencyRequirementFunction  {
                 if (!value.containsValue(parameters.value())) {
                     requirement.setValue(value.fromCoreValue(parameters.value().getCoreValue()));
                 }
+                WaystoneCurrency.LOGGER.debug("min_currency_cost: {} - {} = {}", value.getCoreValue(), parameters.value().getCoreValue(), requirement.getValue().getCoreValue());
                 return requirement;
             },
             WSCCommonConfig.EnableCurrencyConsumption
