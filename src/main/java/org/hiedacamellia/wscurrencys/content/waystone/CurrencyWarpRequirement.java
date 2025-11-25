@@ -33,19 +33,19 @@ public class CurrencyWarpRequirement implements WarpRequirement {
 
     @Override
     public boolean canAfford(Player player) {
-        IMoneyHolder handler = MoneyAPI.API.GetPlayersMoneyHandler(player);
+        IMoneyHolder handler = MoneyAPI.getApi().GetPlayersMoneyHandler(player);
         return handler.getStoredMoney().containsValue(value) && handler.extractMoney(value, true).isEmpty();
     }
 
     @Override
     public void consume(Player player) {
-        IMoneyHolder handler = MoneyAPI.API.GetPlayersMoneyHandler(player);
+        IMoneyHolder handler = MoneyAPI.getApi().GetPlayersMoneyHandler(player);
         handler.extractMoney(value, false);
     }
 
     @Override
     public void rollback(Player player) {
-        IMoneyHolder handler = MoneyAPI.API.GetPlayersMoneyHandler(player);
+        IMoneyHolder handler = MoneyAPI.getApi().GetPlayersMoneyHandler(player);
         handler.insertMoney(value, false);
     }
 

@@ -123,10 +123,9 @@ configurations {
 }
 
 dependencies {
-
-    implementation "curse.maven:waystones-245755:6519206"
-    implementation "curse.maven:lightmans-currency-472521:6503217"
-    implementation "curse.maven:balm-531761:6508667"
+    implementation "curse.maven:waystones-245755:6976678"
+    implementation "curse.maven:lightmans-currency-472521:7254348"
+    implementation "curse.maven:balm-531761:7087416"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
