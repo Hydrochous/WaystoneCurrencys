@@ -21,37 +21,38 @@ jobs:
           distribution: 'temurin'
           
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4  # 升级到 v4
         
       - name: Build with Gradle
         run: ./gradlew build
       
-      # ========== 新增：上传构建产物 ==========
+      # ========== 调试：查看构建产物 ==========
       
-      - name: Find build outputs
-        id: find
+      - name: Debug - List all JAR files
         run: |
-          # 查找构建产物（根据实际项目调整路径）
+          echo "=== 查找所有 JAR 文件 ==="
+          find . -name "*.jar" -type f 2>/dev/null || echo "未找到 JAR"
+          echo ""
+          echo "=== build 目录结构 ==="
+          ls -la build/ 2>/dev/null || echo "build 目录不存在"
+          echo ""
           echo "=== build/libs 目录 ==="
-          ls -la build/libs/ || echo "目录不存在"
-          
-          echo "=== build/distributions 目录 ==="
-          ls -la build/distributions/ || echo "目录不存在"
-          
-          # 记录主 jar 文件路径
-          JAR_FILE=$(ls build/libs/*.jar | grep -v sources | grep -v javadoc | head -1)
-          echo "jar=$JAR_FILE" >> $GITHUB_OUTPUT
-          echo "Found main JAR: $JAR_FILE"
+          ls -la build/libs/ 2>/dev/null || echo "build/libs 不存在"
+
+      # ========== 上传构建产物 ==========
       
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: WaystoneCurrencys-jar
           path: build/libs/*.jar
-          
-      - name: Upload distributions (if shadowJar/plugin present)
-        if: hashFiles('build/distributions/*') != ''
+          if-no-files-found: warn
+          include-hidden-files: true
+
+      - name: Upload distributions
         uses: actions/upload-artifact@v4
+        if: hashFiles('build/distributions/*') != ''
         with:
           name: WaystoneCurrencys-distribution
           path: build/distributions/*
+          if-no-files-found: warn
