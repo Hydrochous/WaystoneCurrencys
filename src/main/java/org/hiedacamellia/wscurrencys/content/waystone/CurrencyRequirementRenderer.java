@@ -46,8 +46,8 @@ public class CurrencyRequirementRenderer implements RequirementRenderer<Currency
         boolean canAfford = currencyWarpRequirement.canAfford(player);
 
         renderCoin(guiGraphics,x,y,COIN_NETHERITE,(int)n,canAfford);
-        renderCoin(guiGraphics,x,y,COIN_EMERALD,(int)e,canAfford);
-        renderCoin(guiGraphics,x,y,COIN_DIAMOND,(int)d,canAfford);
+        renderCoin(guiGraphics,x,y,COIN_DIAMOND,(int)e,canAfford);
+        renderCoin(guiGraphics,x,y,COIN_EMERALD,(int)d,canAfford);
         renderCoin(guiGraphics,x,y,COIN_GOLD,(int)g,canAfford);
         renderCoin(guiGraphics,x,y,COIN_IRON,(int)i,canAfford);
         renderCoin(guiGraphics,x,y,COIN_COPPER,(int)c,canAfford);
