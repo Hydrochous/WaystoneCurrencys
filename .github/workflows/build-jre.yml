@@ -1,79 +1,57 @@
-name: Build and Release Custom JRE
+name: Build and Release
 
 on:
   push:
     tags: ['v*']
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
+      
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
-
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
-
-      - name: Analyze modules with jdeps
-        id: analyze
+          
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        
+      - name: Build with Gradle
+        run: ./gradlew build
+      
+      # ========== 新增：上传构建产物 ==========
+      
+      - name: Find build outputs
+        id: find
         run: |
-          echo "Analyzing module dependencies..."
-          # 使用 jdeps 分析 jar 文件依赖的模块
-          jdeps --print-module-deps target/*.jar > modules.txt
-          echo "Required modules:"
-          cat modules.txt
-          echo "modules=$(cat modules.txt)" >> $GITHUB_OUTPUT
-
-      - name: Build custom JRE with jlink
-        run: |
-          MODULES=$(cat modules.txt)
-          echo "Building JRE with modules: $MODULES"
-          $JAVA_HOME/bin/jlink             --add-modules $MODULES             --strip-debug             --no-man-pages             --no-header-files             --compress=2             --output custom-jre
-          echo "JRE build complete. Size:"
-          du -sh custom-jre/
-
-      - name: Verify JRE
-        run: |
-          echo "Java version in custom JRE:"
-          ./custom-jre/bin/java -version
-          echo ""
-          echo "JRE contents:"
-          ls -la custom-jre/
-
-      - name: Test JRE with application
-        run: |
-          echo "Starting application with custom JRE..."
-          ./custom-jre/bin/java -jar target/*.jar &
-          APP_PID=$!
-          sleep 10
-          echo "Checking application health..."
-          curl -s http://localhost:8080/actuator/health || echo "Health check skipped (no actuator)"
-          kill $APP_PID || true
-
-      - name: Package JRE
-        run: |
-          tar -czf custom-jre-springboot.tar.gz custom-jre/
-          ls -lh custom-jre-springboot.tar.gz
-
-      - name: Upload artifact
+          # 查找构建产物（根据实际项目调整路径）
+          echo "=== build/libs 目录 ==="
+          ls -la build/libs/ || echo "目录不存在"
+          
+          echo "=== build/distributions 目录 ==="
+          ls -la build/distributions/ || echo "目录不存在"
+          
+          # 记录主 jar 文件路径
+          JAR_FILE=$(ls build/libs/*.jar | grep -v sources | grep -v javadoc | head -1)
+          echo "jar=$JAR_FILE" >> $GITHUB_OUTPUT
+          echo "Found main JAR: $JAR_FILE"
+      
+      - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
-          name: custom-jre
-          path: custom-jre-springboot.tar.gz
-
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v1
+          name: WaystoneCurrencys-jar
+          path: build/libs/*.jar
+          
+      - name: Upload distributions (if shadowJar/plugin present)
+        if: hashFiles('build/distributions/*') != ''
+        uses: actions/upload-artifact@v4
         with:
-          files: custom-jre-springboot.tar.gz
-          generate_release_notes: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: WaystoneCurrencys-distribution
+          path: build/distributions/*
